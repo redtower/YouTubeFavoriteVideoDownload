@@ -28,7 +28,7 @@ for i in *.flv
 do
     if [ "$i" != "*.flv" ]; then
         t=`echo $i | sed -e "s/\.flv/\.mp4/"`
-        ffmpeg -i $i -vcodec copy -acodec copy $t > /dev/null
+        ffmpeg -i $i -vcodec copy -acodec copy $t > /dev/null 2> /dev/null
 
         unlink $i
     fi
