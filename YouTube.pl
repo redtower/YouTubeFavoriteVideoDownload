@@ -48,6 +48,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 sub show_usage();
+sub debug($);
 
 my %o =(
     'id'=>'',
@@ -66,9 +67,11 @@ foreach my $url (@{$youtube->getdata()}) {
     my $id = $url;
     $id =~ s/.*v=(.*)&.*/$1/g;
 
-    system("grep '$id' id.cfg > /dev/null");
+    system("grep '$id' id.cfg > /dev/null 2>/dev/null");
     if ($?) {
-        system("python youtube-dl/youtube-dl " . $url . " > /dev/null");
+        my $cmd = 'python youtube-dl/youtube-dl -q -w "' . $url . '"';
+        debug($url);
+        system($cmd);
 
         open ID, ">> id.cfg";
         print ID $id . "\n";
@@ -86,5 +89,12 @@ Usage: perl $0 [Options]
    --help               Show this message.
 EOD
     exit;
+}
+
+sub debug($) {
+    my $word = shift;
+    if ($o{'debug'}) {
+        print $word . "\n";
+    }
 }
 exit;
