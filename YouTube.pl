@@ -69,7 +69,7 @@ foreach my $url (@{$youtube->getdata()}) {
 
     system("grep '$id' id.cfg > /dev/null 2>/dev/null");
     if ($?) {
-        my $cmd = 'python youtube-dl/youtube-dl -q -w "' . $url . '"';
+        my $cmd = 'python youtube-dl/youtube-dl -q -w -t "' . $url . '"';
         debug($url);
         system($cmd);
 
