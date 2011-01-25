@@ -23,6 +23,13 @@ if [ "" != "$opt_id" ]; then
     perl ./YouTube.pl --id $opt_id
 fi
 
+for i in -*
+do
+    if [ "$i" != "-*" ]; then
+        t=`echo $i | sed -e "s/^\-/@/"`
+        mv ./$i ./$t
+    fi
+done
 
 for i in *.flv
 do

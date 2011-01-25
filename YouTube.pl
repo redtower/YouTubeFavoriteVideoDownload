@@ -66,10 +66,11 @@ my $youtube = YouTube->new(id=>$o{'id'});
 foreach my $url (@{$youtube->getdata()}) {
     my $id = $url;
     $id =~ s/.*v=(.*)&.*/$1/g;
+    $id =~ s/^\-/@/;
 
     system("grep '$id' id.cfg > /dev/null 2>/dev/null");
     if ($?) {
-        my $cmd = 'python youtube-dl/youtube-dl -q -w "' . $url . '"';
+        my $cmd = 'python youtube-dl/youtube-dl -q -w -t "' . $url . '"';
         debug($url);
         system($cmd);
 
