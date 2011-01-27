@@ -1,6 +1,13 @@
 #!/bin/sh
 
-OPT=`getopt -n $0 -o i:o: --long id:,outdir: -- "$@"`
+debug() {
+    word=$1;
+    if [ $opt_debug ]; then
+        echo $word;
+    fi
+}
+
+OPT=`getopt -n $0 -o i:I:d --long id:,outmp4:,outm4v:,debug -- "$@"`
 eval set -- "$OPT"
 
 while true;
@@ -9,8 +16,14 @@ case $1 in
     -i|--id)
         opt_id=$2
         ;;
-    -o|--outdir)
-        opt_outdir=$2
+    --outmp4)
+        opt_outmp4=$2
+        ;;
+    --outm4v)
+        opt_outm4v=$2
+        ;;
+    -d|--debug)
+        opt_debug=true
         ;;
     --)
         break
@@ -33,11 +46,9 @@ done
 
 for i in *.mp4
 do
-    if [ "$i" != "*.flv" ]; then
+    if [ "$i" != "*.mp4" ]; then
         t=`echo $i | sed -e "s/\.mp4/\.m4v/"`
         ffmpeg -i "$i" -f ipod -vcodec mpeg4 -b 1200k -mbd 2 -flags mv4+aic -trellis 2 -cmp 2 -subcmp 2 -s 320x180 -r 30000/1001 -acodec libfaac -ar 44100 -ab 128k "$t" > /dev/null 2> /dev/null
-
-        unlink $i
     fi
 done
 
@@ -53,20 +64,21 @@ do
     fi
 done
 
-if [ "" != "$opt_outdir" ]; then
+if [ "" != "$opt_outmp4" ]; then
     for i in *.mp4
     do
-        if [ "$i" = "*.mp4" ]; then
-            exit;
+        if [ "$i" != "*.mp4" ]; then
+            mv $i "$opt_outmp4/"
         fi
-        mv $i $opt_outdir/
-    done
-
-    for i in *.m4v
-    do
-        if [ "$i" = "*.m4v" ]; then
-            exit;
-        fi
-        mv $i $opt_outdir/
     done
 fi
+
+if [ "" != "$opt_outm4v" ]; then
+    for i in *.m4v
+    do
+        if [ "$i" != "*.m4v" ]; then
+            mv $i "$opt_outm4v/"
+        fi
+    done
+fi
+
