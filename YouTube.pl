@@ -102,7 +102,7 @@ sub extract_id($) {
     my $id = shift;
 
     debug('URL:' . $id);
-    $id =~ s/.*v=(.*)&*.*/$1/g;          # http://www.youtube.com/watch?v=XXXXXXXX&amp;feature=youtube_gdata
+    $id =~ s/.*v=(.*)&.*/$1/g;          # http://www.youtube.com/watch?v=XXXXXXXX&amp;feature=youtube_gdata
     $id =~ s/.*\/v\/(.*)&*.*/$1/g;       # http://www.youtube.com/v/XXXXXXXX&hl=ja_JP&fs=1&
     $id =~ s/^\-/@/;
     debug('ID :' . $id);
