@@ -7,12 +7,15 @@ debug() {
     fi
 }
 
-OPT=`getopt -n $0 -o i:I:d --long id:,outmp4:,outm4v:,debug -- "$@"`
+OPT=`getopt -n $0 -o f:i:I:d --long file:,id:,outmp4:,outm4v:,debug -- "$@"`
 eval set -- "$OPT"
 
 while true;
 do
 case $1 in
+    -f|--file)
+        opt_file=$2
+        ;;
     -i|--id)
         opt_id=$2
         ;;
@@ -32,8 +35,17 @@ esac
 shift
 done
 
+arg='';
 if [ "" != "$opt_id" ]; then
-    perl ./YouTube.pl --id $opt_id
+    arg="--id=$opt_id";
+fi
+
+if [ "" != "$opt_file" ]; then
+    arg="$arg --file=$opt_file";
+fi
+
+if [ "" != "$arg" ]; then
+    perl ./YouTube.pl $arg
 fi
 
 for i in -*

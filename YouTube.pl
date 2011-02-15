@@ -47,26 +47,44 @@ package Main;
 use strict;
 use warnings;
 use Getopt::Long;
+sub download($);
+sub extract_id($);
 sub show_usage();
 sub debug($);
 
 my %o =(
+    'file'=>'',
     'id'=>'',
 );
 
 GetOptions(\%o,
+    'file=s',
     'id=s',
     'help',
     'debug',
 ) or $o{'help'}++;
 
-show_usage() if $o{'help'} || !$o{'id'};
+show_usage() if $o{'help'} || (!$o{'id'} && !$o{'file'});
 
-my $youtube = YouTube->new(id=>$o{'id'});
-foreach my $url (@{$youtube->getdata()}) {
-    my $id = $url;
-    $id =~ s/.*v=(.*)&.*/$1/g;
-    $id =~ s/^\-/@/;
+if ($o{'id'}) {
+    my $youtube = YouTube->new(id=>$o{'id'});
+    foreach my $url (@{$youtube->getdata()}) {
+        download($url);
+    }
+}
+
+if ($o{'file'}) {
+    open LF, "< " . $o{'file'} || die 'file not open :$!\n';
+    while (<LF>) {
+        chomp $_;
+        download($_);
+    }
+    close LF;
+}
+
+sub download($) {
+    my $url = shift;
+    my $id = extract_id($url);
 
     system("grep '$id' id.cfg > /dev/null 2>/dev/null");
     if ($?) {
@@ -80,13 +98,26 @@ foreach my $url (@{$youtube->getdata()}) {
     }
 }
 
+sub extract_id($) {
+    my $id = shift;
+
+    debug('URL:' . $id);
+    $id =~ s/.*v=(.*)&*.*/$2/g;          # http://www.youtube.com/watch?v=XXXXXXXX&amp;feature=youtube_gdata
+    $id =~ s/.*\/v\/(.*)&*.*/$1/g;       # http://www.youtube.com/v/XXXXXXXX&hl=ja_JP&fs=1&
+    $id =~ s/^\-/@/;
+    debug('ID :' . $id);
+
+    return $id;
+}
+
 sub show_usage() {
     print <<"EOD";
 
 Usage: perl $0 [Options]
 
  Options:
-   --id userid          YouTube User ID
+   --id   userid        YouTube User ID
+   --file filename      YouTube List File Name
    --help               Show this message.
 EOD
     exit;
