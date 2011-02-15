@@ -44,6 +44,10 @@ if [ "" != "$opt_file" ]; then
     arg="$arg --file=$opt_file";
 fi
 
+if [ $opt_debug ]; then
+    arg="$arg --debug";
+fi
+
 if [ "" != "$arg" ]; then
     perl ./YouTube.pl $arg
 fi
