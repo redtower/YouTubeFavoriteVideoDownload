@@ -72,8 +72,10 @@ show_usage() if $o{'help'} || (!$o{'id'} && !$o{'file'});
 
 if ($o{'id'}) {
     my $youtube = YouTube->new(id=>$o{'id'});
-    foreach my $url (@{$youtube->getdata()}) {
-        download($url);
+    if($youtube) {
+        foreach my $url (@{$youtube->getdata()}) {
+            download($url);
+        }
     }
 }
 
